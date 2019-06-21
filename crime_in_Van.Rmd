@@ -1,0 +1,113 @@
+---
+title: "Crime in Vancouver"
+author: "David"
+date: "June 6, 2019"
+output: pdf_document
+---
+
+```{r}
+
+# Kaggle Wilian Osaku
+# 
+# Source:
+# The data comes from the Vancouver Open Data Catalogue. It was extracted on 2017-07-18 
+# and it contains 530,652 records from 2003-01-01 to 2017-07-13. By Wilian Osaku
+# 
+# 
+# 
+# 
+# Vancouver Open Data Catalogue (all years)
+# 
+# Source:
+# The data comes from the Vancouver Open Data Catalogue. It was extracted on 2019-06-11
+# and contains 603,986 records from 2003-01-01 to 2019-06-7. By David Rucinski
+```
+
+
+#Packages
+```{r}
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+
+```
+
+```{r}
+# crime <- fread("crime.csv")
+
+
+crime_all_years <- fread("crime_csv_all_years.csv")
+
+
+# Check start and end dates
+crime_all_years %>%
+  arrange(desc(YEAR),desc(MONTH),desc(DAY)) %>%
+  tail() #head()
+
+
+
+# To do:
+# Combine date into single record
+# Type, neighbourhood of crimes as factor
+# Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
+# Drop hundred_block
+#
+# Overlay density map on neighbourhoods?
+#
+# Questions:
+# Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
+# Has crime increased over the years ? 
+#   -> what about regional has it increased in certain neighbourhoods ?
+# What type of crime appears most ?
+#
+
+
+```
+
+#Count of crimes and what type[**add plot**]
+```{r}
+# Dplyr way
+count_of_crimes <- crime_all_years %>%
+  count(TYPE) %>%
+  rename(total_of_crime = n)
+
+# Data table way
+crime_all_years[, .N, by = .(TYPE)]
+
+
+
+
+
+
+offset <- crime_all_years %>%
+  filter(HUNDRED_BLOCK == "OFFSET TO PROTECT PRIVACY") %>%
+  group_by(TYPE)
+
+# Offset to protect privacy:
+# What kind of a offensives would that need that?
+offset <- as.data.table(offset)
+offset[, .N, by = .(TYPE)]
+
+# Homicides make sense why you would want privacy, also for any unusual charges that
+# would be easy to identify the persons involved through cross references news.
+
+```
+
+
+#Clean date-time
+```{r}
+crime_all_years$DATE <- with(crime_all_years, ymd(sprintf('%04d%02d%02d', YEAR, MONTH, DAY)))
+
+crime_all_years$TIME <- with(crime_all_years, hms(sprintf('%02d%02d', HOUR, MINUTE)))
+
+
+#find where na is at
+crime_all_years %>%
+  filter( HOUR == NULL )
+```
+
+
+
+
+
