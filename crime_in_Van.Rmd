@@ -70,19 +70,41 @@ crime_all_years %>%
 
 #Count of crimes and what type[**add plot**]
 ```{r}
+
+# If we know the count of crimes we can easily create a visual for it.
+
+
 # Dplyr way
 count_of_crimes <- crime_all_years %>%
   count(TYPE) %>%
   rename(total_of_crime = n)
 
+
 # Data table way
 crime_all_years[, .N, by = .(TYPE)]
 
 
+# Visual
+ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_crime) )) + 
+  geom_col(fill = "steelblue") +
+  coord_flip() + 
+  theme_minimal() +
+  theme( panel.grid.major.y = element_blank()	) +
+  scale_y_continuous(breaks=seq(0,550,50))
+
+# Here the count of total crimes is skewed, Vehicle Collision or Pedestrian Struck (with Fatality)
+# & Homicide have such low counts relatively that they barely show on the plot. So finding a good 
+# transformation to visualize this I thought would be taking the square root. It definitely holds its
+# shape, unlike the log-transform that makes everything look near equal with the exceptation of 2
+# previous crimes.
+#
+# Changed increments to better tell the lower counts, since it is square root the 
+# sqrt_count*sqrt_count = true count for a type of crime.
 
 
 
 
+# Through the  glimpse I saw OFFSET TO PROTECT PRIVACY, just wondering what this is and why.
 offset <- crime_all_years %>%
   filter(HUNDRED_BLOCK == "OFFSET TO PROTECT PRIVACY") %>%
   group_by(TYPE)
@@ -102,6 +124,9 @@ offset[, .N, by = .(TYPE)]
 ```{r}
 crime_all_years$DATE <- with(crime_all_years, ymd(sprintf('%04d%02d%02d', YEAR, MONTH, DAY)))
 
+# Gather up all the time data for crimes and we can look at a time-series analysis, see if there
+# is any increase/decrease in crime of this data set. Also check to see time of day the crimes
+# are usually committed.
 
 
 # crime_all_years$TIME <- with(crime_all_years, hms(sprintf('%02d%02d', HOUR, MINUTE)))
