@@ -22,6 +22,8 @@ output: pdf_document
 # The data comes from the Vancouver Open Data Catalogue. It was extracted on 2019-06-11
 # and contains 603,986 records from 2003-01-01 to 2019-06-7. By David Rucinski
 ```
+{loading remove}
+
 
 
 #Packages
@@ -30,7 +32,6 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 library(lubridate)
-
 ```
 
 ```{r}
@@ -51,9 +52,9 @@ crime_all_years %>%
 
 
 # To do:
-# Combine date into single record
-# Type, neighbourhood of crimes as factor
-# Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
+# *Combine date into single record
+# *Type, neighbourhood of crimes as factor
+# *Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
 # Drop hundred_block
 #
 # Overlay density map on neighbourhoods?
@@ -68,7 +69,9 @@ crime_all_years %>%
 
 ```
 
-#Count of crimes and what type[**add plot**]
+
+
+#Count and type of crime
 ```{r}
 
 # If we know the count of crimes we can easily create a visual for it.
@@ -159,6 +162,9 @@ class(crime_tidy)
 # TYPE and NEIGHBOURHOOD are characters, and crime_tidy is a dataframe,
 # lets change those to factors so we can plot them and change the df to a
 # data.table. DT will be faster, save some memory, and easy to manipulate.
+
+
+#{break}
 
 crime_tidy <- as.data.table(crime_tidy)
 
