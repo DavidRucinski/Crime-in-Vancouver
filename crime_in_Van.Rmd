@@ -55,16 +55,18 @@ crime_all_years %>%
 # *Combine date into single record
 # *Type, neighbourhood of crimes as factor
 # *Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
-# Drop hundred_block
+# *Drop hundred_block
 #
 # Overlay density map on neighbourhoods?
 #
 # Questions:
-# Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
+# *Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
 # Has crime increased over the years ? 
 #   -> what about regional has it increased in certain neighbourhoods ?
-# What type of crime appears most ?
+# *What type of crime appears most ?
 #
+# Are neighbourhoods targeted for certian crimes ? 
+#   -> Is type distributed equally among them
 
 
 ```
@@ -185,9 +187,67 @@ rm(crime_all_years, crime_reduced, remove_list)
 >>>HERE<<<
 
 
-#
+#Crimes: Time of day
 ```{r}
+
+crime_tidy %>%
+ggplot( aes(x = HOUR, fill = TYPE)) +
+  geom_bar(position = "stack") +
+  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
+  scale_fill_brewer()
+
+
+# Overall crime at hours over the years
+crime_all_years %>%
+ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Count of Crimes at Hour", subtitle = "By Years") +
+  facet_wrap(~YEAR)
+
+```
+Pretty steady trend throughout the years, the hour of when a crime is committed seems constant. The chance of a crime happening is more likely in the evening of the day. Later we should look into if crime has been steady over the years or if there's any significant increase/decrease.
+
+
+#Types of crime: Time of day
+```{r}
+
+crime_tidy %>%
+ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
+  facet_wrap(~TYPE)
+
+
+
+# remove >>>
+crime_tidy %>%
+ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
+  facet_wrap(~NEIGHBOURHOOD)
+# <<<
 
 
 
 ```
+
+Theft from Vehicle & of Vehicle spike in the late evening and drops just after midnight. I want to look into the break and enter (B&E) categories, from here it looks like what would be expected. Which is B&E into a commercial building when work hours are usually finished, and B&E into residential when they are at usual working hours.
+
+
+```{r}
+# Taking a look at Break and Enter
+crime_tidy[TYPE  %like% "Break"] %>%
+  ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
+  facet_wrap(~TYPE)
+
+# Just as expected, these crimes committed are at usual times they would be empty.
+  
+# Interesting, looks normal. I wonder why is that?
+crime_tidy[TYPE  %like% "Other Theft"] %>%
+  ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Other Theft")
+```
+
