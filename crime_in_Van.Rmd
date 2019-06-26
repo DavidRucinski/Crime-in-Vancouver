@@ -95,8 +95,9 @@ ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_
   coord_flip() + 
   theme_minimal() +
   theme( panel.grid.major.y = element_blank()	) +
-  scale_y_continuous(breaks=seq(0,550,50)) 
-  #+
+  scale_y_continuous(breaks=seq(0,550,50)) +
+  labs( y = "Square Root of Total Crime", x = "Type of Crime Committed", title = "Crime Distribution")
+  
   #labels for x,y, and title || Also see about scaling the size of graphs
 
 
