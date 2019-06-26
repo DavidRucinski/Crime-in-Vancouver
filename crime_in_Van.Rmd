@@ -22,12 +22,12 @@ output: pdf_document
 # The data comes from the Vancouver Open Data Catalogue. It was extracted on 2019-06-11
 # and contains 603,986 records from 2003-01-01 to 2019-06-7. By David Rucinski
 ```
-{loading remove}
+
 
 
 
 #Packages
-```{r}
+```{r, message = FALSE, warning=FALSE}
 library(data.table)
 library(ggplot2)
 library(dplyr)
@@ -95,7 +95,10 @@ ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_
   coord_flip() + 
   theme_minimal() +
   theme( panel.grid.major.y = element_blank()	) +
-  scale_y_continuous(breaks=seq(0,550,50))
+  scale_y_continuous(breaks=seq(0,550,50)) 
+  #+
+  #labels for x,y, and title || Also see about scaling the size of graphs
+
 
 # Here the count of total crimes is skewed, Vehicle Collision or Pedestrian Struck (with Fatality)
 # & Homicide have such low counts relatively that they barely show on the plot. So finding a good 
