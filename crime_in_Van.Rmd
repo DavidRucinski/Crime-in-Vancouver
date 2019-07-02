@@ -13,6 +13,9 @@ output:
     code_folding: hide
 ---
 
+```{r include=FALSE}
+knitr::opts_chunk$set(comment = NA)
+```
 
 ## Summary 
 
@@ -20,7 +23,7 @@ Taking a look at the crime in Vancouver. I'm trying to translate the numbers int
 
 ## Preparations 
 
-Packages used:
+*Packages used:*
 ```{r packages, message = FALSE, warning=FALSE}
 library(data.table)
 library(ggplot2)
@@ -51,14 +54,17 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 
 ### Preprocessing
 
-To do:
- -Combine date into single record
- -Type, neighbourhood of crimes as factor
- -Check hundred_block == "OFFSET TO PROTECT PRIVACY"
- -Drop hundred_block
- -plots
+**To do:**
+*-Combine date into single record*
 
-Creating a theme to use on the plot:
+*-Type, neighbourhood of crimes as factor*
+
+*-Check hundred_block == "OFFSET TO PROTECT PRIVACY"*
+
+*-Drop hundred_block*
+
+*-Make plots*
+
 ```{r defining_a_theme, echo = FALSE}
 theme_simple <- function(){
   theme_minimal() +
@@ -72,7 +78,7 @@ theme_simple <- function(){
 ``` 
 
 
-Breakdown of crime:
+#### **Breakdown of crime:**
 ```{r}
 
 # Dplyr way
@@ -86,61 +92,10 @@ crime_all_years[, .N, by = .(TYPE)]
 ```
 
 
-
-
-
-### Results
-
-This is where you will plot the data.
-
-
-
-
-
- Overlay density map on neighbourhoods?
-
- Questions:
- *Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
- Has crime increased over the years ? 
-   -> what about regional has it increased in certain neighbourhoods ?
- *What type of crime appears most ?
-
- Are neighbourhoods targeted for certian crimes ? 
-   -> Is type distributed equally among them
-
-
-
-
-
-
-# Visual
+Information removed to protect privacy on some crimes.
 ```{r}
 
-ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_crime) )) + 
-  geom_col(fill = "steelblue") +
-  coord_flip() + 
-  scale_y_continuous(breaks=seq(0,550,50)) +
-  labs( y = "Square Root of Total Crime", x = "Type of Crime Committed", title = "Crime Distribution", subtitle = "Vancouver 2003-2019") +
-  geom_text(aes(label = round(sqrt(total_of_crime)), y = sqrt(total_of_crime) + 15)) + #adds num to bar
-  theme_simple()
-
-  
-  #labels for x,y, and title || Also see about scaling the size of graphs
-
-
-# Here the count of total crimes is skewed, Vehicle Collision or Pedestrian Struck (with Fatality)
-# & Homicide have such low counts relatively that they barely show on the plot. So finding a good 
-# transformation to visualize this I thought would be taking the square root. It definitely holds its
-# shape, unlike the log-transform that makes everything look near equal with the exceptation of 2
-# previous crimes.
-#
-# Changed increments to better tell the lower counts, since it is square root the 
-# sqrt_count*sqrt_count = true count for a type of crime.
-
-
-
-
-# Through the  glimpse I saw OFFSET TO PROTECT PRIVACY, just wondering what this is and why.
+# Through the glimpse() I saw OFFSET TO PROTECT PRIVACY, just wondering what this is and why.
 offset <- crime_all_years %>%
   filter(HUNDRED_BLOCK == "OFFSET TO PROTECT PRIVACY") %>%
   group_by(TYPE)
@@ -150,13 +105,13 @@ offset <- crime_all_years %>%
 offset <- as.data.table(offset)
 offset[, .N, by = .(TYPE)]
 
-# Homicides make sense why you would want privacy, also for any unusual charges that
-# would be easy to identify the persons involved through cross referencing news articles.
-
 ```
+Homicides make sense why you would want privacy, also for any unusual charges that would be easy to identify the persons involved through cross referencing news articles.
 
 
-#Clean date-time
+
+
+#### **Clean date-time**
 ```{r}
 crime_all_years$DATE <- with(crime_all_years, ymd(sprintf('%04d%02d%02d', YEAR, MONTH, DAY)))
 
@@ -179,26 +134,29 @@ crime_all_years$DATE <- with(crime_all_years, ymd(sprintf('%04d%02d%02d', YEAR, 
 
 remove_list <- c("YEAR", "MONTH", "DAY", "MINUTE","HUNDRED_BLOCK")
 
-
+# Removing some variables we won't need
 
 crime_reduced <- crime_all_years %>%
   select( -remove_list ) %>%
   filter(!is.na(HOUR))
-
+```
+**Column names:**
+```{r}
 colnames(crime_reduced)
-
+```
+*Reordering column names*
+```{r}
 crime_tidy <- crime_reduced[, c(1,6,2,3,4,5)]
-# Removing some variables we won't need, let's check how our new data looks
-
+```
+Let's check how our new data looks;
+```{r}
 glimpse(crime_tidy)
 class(crime_tidy)
-# TYPE and NEIGHBOURHOOD are characters, and crime_tidy is a dataframe,
-# lets change those to factors so we can plot them and change the df to a
-# data.table. DT will be faster, save some memory, and easy to manipulate.
+# TYPE and NEIGHBOURHOOD are characters, and crime_tidy is a dataframe, lets change those to factors so we can plot them and change the df to a data.table. DT will be faster, save some memory, and easy to manipulate.
+```
+**TYPE** and **NEIGHBOURHOOD** are characters, and crime_tidy is a dataframe, lets change those to factors so we can plot them and change the df to a data.table. DT will be faster, save some memory, and easy to manipulate.
 
-
-#{break}
-
+```{r}
 crime_tidy <- as.data.table(crime_tidy)
 
 crime_tidy[, TYPE := as.factor(TYPE)]
@@ -207,6 +165,41 @@ crime_tidy[, NEIGHBOURHOOD := as.factor(NEIGHBOURHOOD)]
 glimpse(crime_tidy)
 class(crime_tidy)
 ```
+
+
+
+### Results
+
+#### Crime Distribution
+```{r, fig.width = 12, fig.height = 8}
+
+ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_crime) )) + 
+  geom_col(fill = "steelblue") +
+  coord_flip() + 
+  scale_y_continuous(breaks=seq(0,550,50)) +
+  labs( y = "Square Root of Total Crime", x = "Type of Crime Committed", title = "Crime Distribution", subtitle = "Vancouver 2003-2019") +
+  geom_text(aes(label = round(sqrt(total_of_crime)), y = sqrt(total_of_crime) + 15)) + #adds num to bar
+  theme_simple()
+```
+
+Here the count of total crimes is skewed, *Vehicle Collision or Pedestrian Struck (with Fatality) & Homicide* have such **low counts** relatively that they barely show on the plot. So finding a good transformation to visualize this I thought of taking the square root. It definitely holds its shape, unlike the log-transform that makes everything look near equal with the exceptation of 2 previous crimes.
+
+
+
+
+
+
+
+
+ Questions:
+ Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
+ Has crime increased over the years ? 
+   -> what about regional has it increased in certain neighbourhoods ?
+ What type of crime appears most ?
+
+ Are neighbourhoods targeted for certian crimes ? 
+
+
 
 
 #Removed
