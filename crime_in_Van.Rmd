@@ -182,7 +182,7 @@ ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_
   theme_simple()
 ```
 
-Here the count of total crimes is skewed, *Vehicle Collision or Pedestrian Struck (with Fatality) & Homicide* have such **low counts** relatively that they barely show on the plot. So finding a good transformation to visualize this I thought of taking the square root. It definitely holds its shape, unlike the log-transform that makes everything look near equal with the exceptation of 2 previous crimes.
+Here the count of total crimes is skewed, **Vehicle Collision or Pedestrian Struck (with Fatality) & Homicide** have such *low counts* relatively that they barely show on the plot. So finding a good transformation to visualize this I thought of taking the square root. It definitely holds its shape, unlike the log-transform that makes everything look near equal with the exceptation of 2 previous crimes.
 
 
 
@@ -202,8 +202,8 @@ Here the count of total crimes is skewed, *Vehicle Collision or Pedestrian Struc
 
 
 
-#Removed
-```{r}
+
+```{r removed, include = FALSE}
 #rm(crime_all_years, crime_reduced, remove_list)
 ```
 
