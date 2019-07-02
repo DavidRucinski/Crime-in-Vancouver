@@ -1,29 +1,27 @@
 ---
 title: "Crime in Vancouver"
-author: "David"
+author: "David Rucinski"
 date: "June 6, 2019"
 output:
   html_document:
-    df_print: paged
+    theme: cerulean
+    highlight: espresso
+    toc: true
+    toc_float: false
+    toc_depth: 4
+    df_print: kable
+    code_folding: hide
 ---
-
-```{r}
-# Vancouver Open Data Catalogue (all years)
-# 
-# Source:
-# The data comes from the Vancouver Open Data Catalogue. It was extracted on 2019-06-11
-# and contains 603,986 records from 2003-01-01 to 2019-06-7. By David Rucinski
-```
 
 
 ## Summary 
 
-summarize
+Taking a look at the crime in Vancouver. I'm trying to translate the numbers into something more visual for people to see. How has crime changed over the years, are there neighbourhoods more prone to crimes, what time do most crimes happen? These are a few questions I would like to answer throught the data.
 
 ## Preparations 
 
+Packages used:
 ```{r packages, message = FALSE, warning=FALSE}
-library(ggthemes)
 library(data.table)
 library(ggplot2)
 library(dplyr)
@@ -34,7 +32,9 @@ library(lubridate)
 
 ### Data
 
-[data set](https://data.vancouver.ca/datacatalogue/crime-data.htm)
+Source:
+The data comes from the [Vancouver Open Data Catalogue (all years)](https://data.vancouver.ca/datacatalogue/crime-data.htm). It was extracted on 2019-06-11 and contains 603,986 records from 2003-01-01 to 2019-06-7. By David Rucinski
+
 
 ```{r}
 crime_all_years <- fread("crime_csv_all_years.csv")
@@ -51,8 +51,14 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 
 ### Preprocessing
 
-This is where you will preprocess the data.
+To do:
+ -Combine date into single record
+ -Type, neighbourhood of crimes as factor
+ -Check hundred_block == "OFFSET TO PROTECT PRIVACY"
+ -Drop hundred_block
+ -plots
 
+Creating a theme to use on the plot:
 ```{r defining_a_theme, echo = FALSE}
 theme_simple <- function(){
   theme_minimal() +
@@ -66,19 +72,21 @@ theme_simple <- function(){
 ``` 
 
 
-# Count and type of crime
+Breakdown of crime:
 ```{r}
 
 # Dplyr way
-# count_of_crimes <- crime_all_years %>%
-#   count(TYPE) %>%
-#   rename(total_of_crime = n)
+ count_of_crimes <- crime_all_years %>%
+   count(TYPE) %>%
+   rename(total_of_crime = n)
 
 
 # Data table way
 crime_all_years[, .N, by = .(TYPE)]
 ```
-![Vacouver](https://en.wikipedia.org/wiki/Vancouver#/media/File:Concord_Pacific_Master_Plan_Area.jpg)
+
+
+
 
 
 ### Results
@@ -88,13 +96,6 @@ This is where you will plot the data.
 
 
 
-
-
- To do:
- *Combine date into single record
- *Type, neighbourhood of crimes as factor
- *Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
- *Drop hundred_block
 
  Overlay density map on neighbourhoods?
 
