@@ -2,20 +2,12 @@
 title: "Crime in Vancouver"
 author: "David"
 date: "June 6, 2019"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r}
-
-# Kaggle Wilian Osaku
-# 
-# Source:
-# The data comes from the Vancouver Open Data Catalogue. It was extracted on 2017-07-18 
-# and it contains 530,652 records from 2003-01-01 to 2017-07-13. By Wilian Osaku
-# 
-# 
-# 
-# 
 # Vancouver Open Data Catalogue (all years)
 # 
 # Source:
@@ -24,10 +16,13 @@ output: pdf_document
 ```
 
 
+## Summary 
 
+summarize
 
-#Packages
-```{r, message = FALSE, warning=FALSE}
+## Preparations 
+
+```{r packages, message = FALSE, warning=FALSE}
 library(ggthemes)
 library(data.table)
 library(ggplot2)
@@ -35,44 +30,28 @@ library(dplyr)
 library(lubridate)
 ```
 
+## Analysis
+
+### Data
+
+[data set](https://data.vancouver.ca/datacatalogue/crime-data.htm)
+
 ```{r}
-# crime <- fread("crime.csv")
-
-
 crime_all_years <- fread("crime_csv_all_years.csv")
 
-
 # Check start and end dates
-crime_all_years %>%
-  arrange(desc(YEAR),desc(MONTH),desc(DAY)) %>%
-  head()
-
-crime_all_years %>%
-  arrange(desc(YEAR),desc(MONTH),desc(DAY)) %>%
-  tail()
-
-
-# To do:
-# *Combine date into single record
-# *Type, neighbourhood of crimes as factor
-# *Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
-# *Drop hundred_block
-#
-# Overlay density map on neighbourhoods?
-#
-# Questions:
-# *Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
-# Has crime increased over the years ? 
-#   -> what about regional has it increased in certain neighbourhoods ?
-# *What type of crime appears most ?
-#
-# Are neighbourhoods targeted for certian crimes ? 
-#   -> Is type distributed equally among them
-
-
+# crime_all_years %>%
+#   arrange(desc(YEAR),desc(MONTH),desc(DAY)) %>%
+#   head()
+# 
+# crime_all_years %>%
+#   arrange(desc(YEAR),desc(MONTH),desc(DAY)) %>%
+#   tail()
 ```
 
+### Preprocessing
 
+This is where you will preprocess the data.
 
 ```{r defining_a_theme, echo = FALSE}
 theme_simple <- function(){
@@ -87,23 +66,55 @@ theme_simple <- function(){
 ``` 
 
 
-#Count and type of crime
+# Count and type of crime
 ```{r}
 
-# If we know the count of crimes we can easily create a visual for it.
-
-
 # Dplyr way
-count_of_crimes <- crime_all_years %>%
-  count(TYPE) %>%
-  rename(total_of_crime = n)
+# count_of_crimes <- crime_all_years %>%
+#   count(TYPE) %>%
+#   rename(total_of_crime = n)
 
 
 # Data table way
 crime_all_years[, .N, by = .(TYPE)]
+```
+![Vacouver](https://en.wikipedia.org/wiki/Vancouver#/media/File:Concord_Pacific_Master_Plan_Area.jpg)
+
+
+### Results
+
+This is where you will plot the data.
+
+
+
+
+
+
+ To do:
+ *Combine date into single record
+ *Type, neighbourhood of crimes as factor
+ *Check hundred_block == "OFFSET TO PROTECT PRIVACY" , [should we remove those records?]
+ *Drop hundred_block
+
+ Overlay density map on neighbourhoods?
+
+ Questions:
+ *Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
+ Has crime increased over the years ? 
+   -> what about regional has it increased in certain neighbourhoods ?
+ *What type of crime appears most ?
+
+ Are neighbourhoods targeted for certian crimes ? 
+   -> Is type distributed equally among them
+
+
+
+
 
 
 # Visual
+```{r}
+
 ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_crime) )) + 
   geom_col(fill = "steelblue") +
   coord_flip() + 
@@ -199,7 +210,7 @@ class(crime_tidy)
 
 #Removed
 ```{r}
-rm(crime_all_years, crime_reduced, remove_list)
+#rm(crime_all_years, crime_reduced, remove_list)
 ```
 
 
