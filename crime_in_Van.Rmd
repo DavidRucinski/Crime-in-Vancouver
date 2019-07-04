@@ -17,11 +17,11 @@ output:
 knitr::opts_chunk$set(comment = NA)
 ```
 
-## Summary 
+## **Summary**
 
 Taking a look at the crime in Vancouver. I'm trying to translate the numbers into something more visual for people to see. How has crime changed over the years, are there neighbourhoods more prone to crimes, what time do most crimes happen? These are a few questions I would like to answer throught the data.
 
-## Preparations 
+## **Preparations**
 
 *Packages used:*
 ```{r packages, message = FALSE, warning=FALSE}
@@ -31,7 +31,7 @@ library(dplyr)
 library(lubridate)
 ```
 
-## Analysis
+## **Analysis**
 
 ### Data
 
@@ -78,7 +78,7 @@ theme_simple <- function(){
 ``` 
 
 
-#### **Breakdown of crime:**
+#### Breakdown of crime
 ```{r}
 
 # Dplyr way
@@ -111,7 +111,7 @@ Homicides make sense why you would want privacy, also for any unusual charges th
 
 
 
-#### **Clean date-time**
+#### Clean date-time
 ```{r}
 crime_all_years$DATE <- with(crime_all_years, ymd(sprintf('%04d%02d%02d', YEAR, MONTH, DAY)))
 
@@ -168,7 +168,7 @@ class(crime_tidy)
 
 
 
-### Results
+### **Results**
 
 #### Crime Distribution
 ```{r, fig.width = 12, fig.height = 8}
@@ -185,7 +185,30 @@ ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_
 Here the count of total crimes is skewed, **Vehicle Collision or Pedestrian Struck (with Fatality) & Homicide** have such *low counts* relatively that they barely show on the plot. So finding a good transformation to visualize this I thought of taking the square root. It definitely holds its shape, unlike the log-transform that makes everything look near equal with the exceptation of 2 previous crimes.
 
 
+#### Types of Crime at Hour
+```{r All_years time of day, fig.width = 12, fig.height = 8}
 
+crime_tidy %>%
+ggplot( aes(x = HOUR, fill = TYPE)) +
+  geom_bar(position = "stack") +
+  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "From 2003-01-01 to 2019-06-7 (YMD)") +
+  scale_fill_brewer() +
+  theme_simple()
+```
+Most crime happens at the same time of day, but we need to look at this separately to see if all crimes fall under this. Expecting that some crimes should happen more during the day when people would not be home, i.e. break and entering a residential home.
+
+
+#### Time of Crimes
+```{r Time of day split per year, fig.width = 12, fig.height = 8, warning=FALSE}
+crime_all_years %>%
+ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "Split by year") +
+  facet_wrap(~YEAR) +
+  theme_simple()
+
+```
+Pretty steady trend throughout the years, the hour of when a crime is committed seems constant. The chance of a crime happening is more likely later in the day, little surprise is the peak at 18:00 (6 pm). We should look into if crime has been steady over the years or if there's any significant increase/decrease.
 
 
 
@@ -207,33 +230,6 @@ Here the count of total crimes is skewed, **Vehicle Collision or Pedestrian Stru
 #rm(crime_all_years, crime_reduced, remove_list)
 ```
 
-
-
-
-
-#Crimes: Time of day
-```{r All_years time of day, fig.width = 12, fig.height = 8}
-
-crime_tidy %>%
-ggplot( aes(x = HOUR, fill = TYPE)) +
-  geom_bar(position = "stack") +
-  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "From 2003-01-01 to 2019-06-7 (YMD)") +
-  scale_fill_brewer() +
-  theme_simple()
-```
-Most crime happens at the same time of day, but we need to look at this separately to see if all crimes fall under this. Expecting that some crimes should happen more during the day when people would not be home, i.e. break and entering a residential home.
-
-
-```{r Time of day split per year, fig.width = 12, fig.height = 8, warning=FALSE}
-crime_all_years %>%
-ggplot( aes(x = HOUR)) +
-  geom_bar(fill = "steelblue") +
-  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "Split by year") +
-  facet_wrap(~YEAR) +
-  theme_simple()
-
-```
-Pretty steady trend throughout the years, the hour of when a crime is committed seems constant. The chance of a crime happening is more likely later in the day, little surprise is the peak at 18:00 (6 pm). We should look into if crime has been steady over the years or if there's any significant increase/decrease.
 
 
 
