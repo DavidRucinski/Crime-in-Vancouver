@@ -39,7 +39,7 @@ Source:
 The data comes from the [Vancouver Open Data Catalogue (all years)](https://data.vancouver.ca/datacatalogue/crime-data.htm). It was extracted on 2019-06-11 and contains 603,986 records from 2003-01-01 to 2019-06-7. By David Rucinski
 
 
-```{r}
+```{r loading data}
 crime_all_years <- fread("crime_csv_all_years.csv")
 
 # Check start and end dates
@@ -79,7 +79,7 @@ theme_simple <- function(){
 
 
 #### Breakdown of crime
-```{r}
+```{r counts}
 
 # Dplyr way
  count_of_crimes <- crime_all_years %>%
@@ -93,7 +93,7 @@ crime_all_years[, .N, by = .(TYPE)]
 
 
 Information removed to protect privacy on some crimes.
-```{r}
+```{r offset info}
 
 # Through the glimpse() I saw OFFSET TO PROTECT PRIVACY, just wondering what this is and why.
 offset <- crime_all_years %>%
@@ -112,7 +112,7 @@ Homicides make sense why you would want privacy, also for any unusual charges th
 
 
 #### Clean date-time
-```{r}
+```{r merge time to date}
 crime_all_years$DATE <- with(crime_all_years, ymd(sprintf('%04d%02d%02d', YEAR, MONTH, DAY)))
 
 # Gather up all the time data for crimes and we can look at a time-series analysis, see if there
