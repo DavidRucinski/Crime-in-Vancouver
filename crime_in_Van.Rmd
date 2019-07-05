@@ -156,7 +156,7 @@ class(crime_tidy)
 ```
 **TYPE** and **NEIGHBOURHOOD** are characters, and crime_tidy is a dataframe, lets change those to factors so we can plot them and change the df to a data.table. DT will be faster, save some memory, and easy to manipulate.
 
-```{r}
+```{r, warning=FALSE}
 crime_tidy <- as.data.table(crime_tidy)
 
 crime_tidy[, TYPE := as.factor(TYPE)]
@@ -191,24 +191,36 @@ Here the count of total crimes is skewed, **Vehicle Collision or Pedestrian Stru
 crime_tidy %>%
 ggplot( aes(x = HOUR, fill = TYPE)) +
   geom_bar(position = "stack") +
-  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "From 2003-01-01 to 2019-06-7 (YMD)") +
+  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "Vancouver 2003-2019") +
   scale_fill_brewer() +
   theme_simple()
 ```
 Most crime happens at the same time of day, but we need to look at this separately to see if all crimes fall under this. Expecting that some crimes should happen more during the day when people would not be home, i.e. break and entering a residential home.
 
 
-#### Time of Crimes
 ```{r Time of day split per year, fig.width = 12, fig.height = 8, warning=FALSE}
 crime_all_years %>%
 ggplot( aes(x = HOUR)) +
   geom_bar(fill = "steelblue") +
-  labs(title = "Crime Distribution", subtitle = "By hour of day", caption = "Split by year") +
+  labs(title = "Time of crime by year", subtitle = "By hour of day", caption = "Vancouver 2003-2019") +
   facet_wrap(~YEAR) +
   theme_simple()
 
 ```
 Pretty steady trend throughout the years, the hour of when a crime is committed seems constant. The chance of a crime happening is more likely later in the day, little surprise is the peak at 18:00 (6 pm). We should look into if crime has been steady over the years or if there's any significant increase/decrease.
+
+
+```{r, fig.width = 12, fig.height = 8}
+
+crime_tidy %>%
+ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "What Time are Certain Crimes Committed?", subtitle = "By Type of Crime"  , caption = "Vancouver 2003-2019") +
+  facet_wrap(~TYPE) 
+```
+Theft from Vehicle & of Vehicle spike in the late evening and drops just after midnight. I want to look into the break and enter categories, from here it looks like what would be expected. Which is break and entering into a commercial building when work hours are usually finished, break and entering into residential when they are at usual working hours.
+
+
 
 
 
@@ -238,30 +250,32 @@ Pretty steady trend throughout the years, the hour of when a crime is committed 
 
 >>>HERE<<<
 
-#Types of crime: Time of day
-```{r}
 
-crime_tidy %>%
-ggplot( aes(x = HOUR)) +
-  geom_bar(fill = "steelblue") +
-  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
-  facet_wrap(~TYPE)
+#### Crime by Neighbourhood
+```{r crime by neighbourhood, fig.width = 12, fig.height = 8}
 
-
+crime_tidy[, .N, by = .(NEIGHBOURHOOD)] %>%
+  arrange(desc(N))
 
 # remove >>>
 crime_tidy %>%
-ggplot( aes(x = HOUR)) +
-  geom_bar(fill = "steelblue") +
-  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
-  facet_wrap(~NEIGHBOURHOOD)
+  filter(NEIGHBOURHOOD != "Central Business District", NEIGHBOURHOOD != "") %>%
+  count(NEIGHBOURHOOD) %>%
+  group_by(NEIGHBOURHOOD) %>%
+  rename(crimes_committed = n) %>%
+ggplot( aes(x = reorder(NEIGHBOURHOOD,crimes_committed), y = sqrt(crimes_committed) ) ) +
+  geom_col(fill = "steelblue") +
+  labs(title = "Crime Count by Neighbourhood", subtitle = "Excluded: Central Business District & Missing Values due to Privacy" , caption = "Vancouver 2003-2019") +
+  coord_flip()
 # <<<
 
+aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_crime) )
 
 
+crime_tidy %>%
+   count(NEIGHBOURHOOD) %>%
+   rename(count_of_crime = n)
 ```
-
-Theft from Vehicle & of Vehicle spike in the late evening and drops just after midnight. I want to look into the break and enter (B&E) categories, from here it looks like what would be expected. Which is B&E into a commercial building when work hours are usually finished, and B&E into residential when they are at usual working hours.
 
 
 ```{r}
