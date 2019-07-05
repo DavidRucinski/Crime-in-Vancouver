@@ -22,6 +22,10 @@ knitr::opts_chunk$set(comment = NA)
 +summary from above
 
 
++Use and practice packages dplyr,ggplot2, and data.table. Create a report with HTML instead of pdf. Launch a website for the project, and eventually to host all repositories from github.
+
+
+
  Questions:
  Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
  Has crime increased over the years ? 
@@ -112,7 +116,7 @@ crime_all_years[, .N, by = .(TYPE)]
 
 
 Information removed to protect privacy on some crimes.
-```{r offset info}
+```{r offset info, warning=FALSE}
 
 # Through the glimpse() I saw OFFSET TO PROTECT PRIVACY, just wondering what this is and why.
 offset <- crime_all_years %>%
@@ -292,17 +296,30 @@ ggplot( aes(x = reorder(NEIGHBOURHOOD,crimes_committed), y = sqrt(crimes_committ
 
 
 
-```{r time series of neighbourhood}
+```{r longitude and latitude of neighbourhood, fig.width = 12, fig.height = 8}
 
+crime_tidy %>%
+  ggplot( aes(x = X,y = Y, color = NEIGHBOURHOOD)) +
+  guides(color = guide_legend(override.aes = list(size=8))) + # resize the legend
+  geom_point(alpha = 0.4, data = crime_tidy[crime_tidy$NEIGHBOURHOOD != "",] ) + 
+  coord_cartesian(xlim = c(484000,498000), ylim = c(5450000, 5462500) ) +
+  labs(title = "Longitude and Latitude of Crimes Committed", subtitle = "By Neighbourhood", caption = "Vancouver 2003-2019", y ="Latitude", x = "Longitude ") +
+  theme_simple() +
+  theme(legend.text = element_text(colour="gray15", size = 10),
+        legend.title = element_text(colour="black", size = 12),
+        plot.title = element_text(lineheight=3, face="bold", 
+               color="black", size=14),
+        plot.caption = element_text(color = "gray15")
+        )
 
 ```
+[comment]
 
 
 
 
 
-
-```{r}
+```{r, fig.width = 12, fig.height = 8}
 # Taking a look at Break and Enter
 crime_tidy[TYPE  %like% "Break"] %>%
   ggplot( aes(x = HOUR)) +
