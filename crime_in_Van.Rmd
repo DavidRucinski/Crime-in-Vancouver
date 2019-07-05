@@ -246,11 +246,6 @@ ggplot( aes(x = HOUR)) +
 Theft from Vehicle & of Vehicle spike in the late evening and drops just after midnight. I want to look into the break and enter categories, from here it looks like what would be expected. Which is break and entering into a commercial building when work hours are usually finished, break and entering into residential when they are at usual working hours.
 
 
-
-
-
-
-
 ```{r removed, include = FALSE}
 # To run on lower spec computers
 #
@@ -258,14 +253,6 @@ Theft from Vehicle & of Vehicle spike in the late evening and drops just after m
 #
 # rm(crime_all_years, crime_reduced, remove_list)
 ```
-
-
-
-
-
-
-
->>>HERE<<<
 
 
 #### Crime by Neighbourhood
@@ -317,7 +304,7 @@ crime_tidy %>%
 
 
 
-
+>>>HERE<<<
 
 ```{r, fig.width = 12, fig.height = 8}
 # Taking a look at Break and Enter
