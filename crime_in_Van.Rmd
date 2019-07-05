@@ -301,7 +301,7 @@ ggplot( aes(x = reorder(NEIGHBOURHOOD,crimes_committed), y = sqrt(crimes_committ
 crime_tidy %>%
   ggplot( aes(x = X,y = Y, color = NEIGHBOURHOOD)) +
   guides(color = guide_legend(override.aes = list(size=8))) + # resize the legend
-  geom_point(alpha = 0.4, data = crime_tidy[crime_tidy$NEIGHBOURHOOD != "",] ) + 
+  geom_point(alpha = 0.8, data = crime_tidy[crime_tidy$NEIGHBOURHOOD != "",] ) + 
   coord_cartesian(xlim = c(484000,498000), ylim = c(5450000, 5462500) ) +
   labs(title = "Longitude and Latitude of Crimes Committed", subtitle = "By Neighbourhood", caption = "Vancouver 2003-2019", y ="Latitude", x = "Longitude ") +
   theme_simple() +
