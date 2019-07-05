@@ -17,9 +17,28 @@ output:
 knitr::opts_chunk$set(comment = NA)
 ```
 
-## **Summary**
+## **Objective** [Change]
++questions
++summary from above
+
+
+ Questions:
+ Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
+ Has crime increased over the years ? 
+   -> what about regional has it increased in certain neighbourhoods ?
+ What type of crime appears most ?
+
+ Are neighbourhoods targeted for certian crimes ? 
+
+
+
+## **Summary** [Change]
 
 Taking a look at the crime in Vancouver. I'm trying to translate the numbers into something more visual for people to see. How has crime changed over the years, are there neighbourhoods more prone to crimes, what time do most crimes happen? These are a few questions I would like to answer throught the data.
+
+-summary
++summarize results
++reorder for Objective first
 
 ## **Preparations**
 
@@ -72,7 +91,7 @@ theme_simple <- function(){
         plot.margin = unit(c(5, 10, 5, 10), units = "mm"),
         axis.ticks = element_blank(),
         panel.grid = element_blank(),
-        plot.caption = element_text(color = "gray25")
+        plot.caption = element_text(color = "gray20")
         ) 
 }
 ``` 
@@ -212,6 +231,8 @@ Pretty steady trend throughout the years, the hour of when a crime is committed 
 
 ```{r, fig.width = 12, fig.height = 8}
 
+# >>> HTML how to center graph ??
+
 crime_tidy %>%
 ggplot( aes(x = HOUR)) +
   geom_bar(fill = "steelblue") +
@@ -226,20 +247,12 @@ Theft from Vehicle & of Vehicle spike in the late evening and drops just after m
 
 
 
- Questions:
- Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
- Has crime increased over the years ? 
-   -> what about regional has it increased in certain neighbourhoods ?
- What type of crime appears most ?
-
- Are neighbourhoods targeted for certian crimes ? 
-
-
-
-
-
 ```{r removed, include = FALSE}
-#rm(crime_all_years, crime_reduced, remove_list)
+# To run on lower spec computers
+#
+# Just to move into the right spot
+#
+# rm(crime_all_years, crime_reduced, remove_list)
 ```
 
 
@@ -252,12 +265,16 @@ Theft from Vehicle & of Vehicle spike in the late evening and drops just after m
 
 
 #### Crime by Neighbourhood
-```{r crime by neighbourhood, fig.width = 12, fig.height = 8}
+```{r count by neighbourhood}
 
 crime_tidy[, .N, by = .(NEIGHBOURHOOD)] %>%
   arrange(desc(N))
 
-# remove >>>
+```
+
+```{r neighbourhood plot, fig.width = 12, fig.height = 8}
+
+# SQL in R: dyplr
 crime_tidy %>%
   filter(NEIGHBOURHOOD != "Central Business District", NEIGHBOURHOOD != "") %>%
   count(NEIGHBOURHOOD) %>%
@@ -265,17 +282,24 @@ crime_tidy %>%
   rename(crimes_committed = n) %>%
 ggplot( aes(x = reorder(NEIGHBOURHOOD,crimes_committed), y = sqrt(crimes_committed) ) ) +
   geom_col(fill = "steelblue") +
-  labs(title = "Crime Count by Neighbourhood", subtitle = "Excluded: Central Business District & Missing Values due to Privacy" , caption = "Vancouver 2003-2019") +
-  coord_flip()
-# <<<
+  labs(title = "Crime Count by Neighbourhood", subtitle = "Excluded: Central Business District & Missing Values due to Privacy" , caption = "Vancouver 2003-2019", x = "Neighbourhood", y = "Square Root of Crimes Committed") +
+  coord_flip() +
+  geom_text(aes(label = round(sqrt(crimes_committed)), y = sqrt(crimes_committed) + 5)) +
+  theme_simple()
 
-aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_crime) )
-
-
-crime_tidy %>%
-   count(NEIGHBOURHOOD) %>%
-   rename(count_of_crime = n)
 ```
+[Comment]
+
+
+
+```{r time series of neighbourhood}
+
+
+```
+
+
+
+
 
 
 ```{r}
