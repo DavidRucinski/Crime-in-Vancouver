@@ -41,3 +41,13 @@ ul.posts {
 ul.posts li {
     list-style: none;
 }
+
+container.main
+{
+   padding:10px;
+}
+div.sm-col
+{
+    justify:center;
+}
+ 
