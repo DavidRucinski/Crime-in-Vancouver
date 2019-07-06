@@ -101,6 +101,7 @@ theme_simple <- function(){
 ``` 
 
 
+
 #### Breakdown of crime
 ```{r counts}
 
@@ -115,7 +116,9 @@ crime_all_years[, .N, by = .(TYPE)]
 ```
 
 
-Information removed to protect privacy on some crimes.
+
+**OFFSET TO PROTECT PRIVACY**
+
 ```{r offset info, warning=FALSE}
 
 # Through the glimpse() I saw OFFSET TO PROTECT PRIVACY, just wondering what this is and why.
@@ -129,6 +132,9 @@ offset <- as.data.table(offset)
 offset[, .N, by = .(TYPE)]
 
 ```
+*Information removed to protect privacy on some crimes.*
+
+
 Homicides make sense why you would want privacy, also for any unusual charges that would be easy to identify the persons involved through cross referencing news articles.
 
 
@@ -177,7 +183,11 @@ glimpse(crime_tidy)
 class(crime_tidy)
 # TYPE and NEIGHBOURHOOD are characters, and crime_tidy is a dataframe, lets change those to factors so we can plot them and change the df to a data.table. DT will be faster, save some memory, and easy to manipulate.
 ```
+
+
 **TYPE** and **NEIGHBOURHOOD** are characters, and crime_tidy is a dataframe, lets change those to factors so we can plot them and change the df to a data.table. DT will be faster, save some memory, and easy to manipulate.
+
+
 
 ```{r, warning=FALSE}
 crime_tidy <- as.data.table(crime_tidy)
@@ -188,6 +198,7 @@ crime_tidy[, NEIGHBOURHOOD := as.factor(NEIGHBOURHOOD)]
 glimpse(crime_tidy)
 class(crime_tidy)
 ```
+
 
 
 
@@ -246,6 +257,34 @@ ggplot( aes(x = HOUR)) +
 Theft from Vehicle & of Vehicle spike in the late evening and drops just after midnight. I want to look into the break and enter categories, from here it looks like what would be expected. Which is break and entering into a commercial building when work hours are usually finished, break and entering into residential when they are at usual working hours.
 
 
+**Taking a look at Break and Enter**
+```{r, fig.width = 12, fig.height = 6}
+crime_tidy[TYPE  %like% "Break"] %>%
+  ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Breaking and Entering", subtitle = "Count of Crimes at Hour", caption = "Vancouver 2003-2019") +
+  facet_wrap(~TYPE) +
+  theme_simple()
+```
+
+Although there are still counts of crime being committed in the off-hours, it is just as expected. These crimes committed are at usual times they would be empty, i.e. commercial buildings *after* working hours and residential buildings *during* working hours. 
+
+Since 'other' is not explicitly said we cannot assume these are homes. There is huge spike at noon for residential/other buildings, the multimodal shape suggests there are *key* times for breaking and entering these places. In the morning right as people are leaving for work, at noon when most people would have lunch, 18:00 when some people would go out for dinner (or non-residential), and at midnight when most people would be asleep.
+
+
+
+```{r, fig.width = 12, fig.height = 6}
+crime_tidy[TYPE  %like% "Other Theft"] %>%
+  ggplot( aes(x = HOUR)) +
+  geom_bar(fill = "steelblue") +
+  labs(title = "Other Theft", subtitle = "Count of Crimes at Hour", caption = "Vancouver 2003-2019") +
+  theme_simple()
+
+```
+Interesting, looks normally distributed with a left tail.
+
+
+
 ```{r removed, include = FALSE}
 # To run on lower spec computers
 #
@@ -255,6 +294,8 @@ Theft from Vehicle & of Vehicle spike in the late evening and drops just after m
 ```
 
 
+
+
 #### Crime by Neighbourhood
 ```{r count by neighbourhood}
 
@@ -262,6 +303,10 @@ crime_tidy[, .N, by = .(NEIGHBOURHOOD)] %>%
   arrange(desc(N))
 
 ```
+
+*Information removed to protect privacy on some crimes.*
+
+From the table above it clearly shows that **Central Business District** has had the most crime, more than double the amount **West End** has had. Also there is count of crimes that have missing values for **NEIGHBOURHOOD**, which is offset for privacy reasons, that may be a bit confusing. Thus, to compare all other neighbourhoods and not skew the plot I have removed those 2 factors.
 
 ```{r neighbourhood plot, fig.width = 12, fig.height = 8}
 
@@ -279,7 +324,7 @@ ggplot( aes(x = reorder(NEIGHBOURHOOD,crimes_committed), y = sqrt(crimes_committ
   theme_simple()
 
 ```
-[Comment]
+
 
 
 
@@ -299,29 +344,17 @@ crime_tidy %>%
         plot.caption = element_text(color = "gray15")
         )
 
+# Scattor plot, is there a way to label the clusters? too many colours make it hard to distinguish
 ```
-[comment]
+With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example,**Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
 
+```{r time series of neighbourhood crime}
 
+#how have neighbourhoods changed over time
+```
 
 >>>HERE<<<
 
-```{r, fig.width = 12, fig.height = 8}
-# Taking a look at Break and Enter
-crime_tidy[TYPE  %like% "Break"] %>%
-  ggplot( aes(x = HOUR)) +
-  geom_bar(fill = "steelblue") +
-  labs(title = "Count of Crimes at Hour", subtitle = "YMD: 2003-01-01 to 2019-06-7") +
-  facet_wrap(~TYPE)
-
-# Just as expected, these crimes committed are at usual times they would be empty.
-  
-# Interesting, looks normal. I wonder why is that?
-crime_tidy[TYPE  %like% "Other Theft"] %>%
-  ggplot( aes(x = HOUR)) +
-  geom_bar(fill = "steelblue") +
-  labs(title = "Other Theft")
-```
 
 
 
