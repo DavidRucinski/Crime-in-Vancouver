@@ -344,11 +344,32 @@ crime_tidy %>%
         plot.caption = element_text(color = "gray15")
         )
 
-# Scattor plot, is there a way to label the clusters? too many colours make it hard to distinguish
+# Can I make this interactive? drag bar for year/month?
 ```
 With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example,**Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
 
+
+
 ```{r time series of neighbourhood crime}
+
+
+ts_test <- crime_tidy %>%
+  filter(NEIGHBOURHOOD == "Killarney") %>%
+  count(DATE)
+
+
+ts_test %>% group_by(month=floor_date(DATE, "month")) %>%
+   summarize(amount=sum(n)) %>%
+   ggplot( aes(month, amount)) +
+      geom_line()
+
+#%>%
+#  group_by(NEIGHBOURHOOD)
+  
+
+ggplot( data = ts_test, aes( DATE, n )) + 
+  geom_line()
+
 
 #how have neighbourhoods changed over time
 ```
