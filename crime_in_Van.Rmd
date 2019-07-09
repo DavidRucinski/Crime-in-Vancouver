@@ -17,32 +17,13 @@ output:
 knitr::opts_chunk$set(comment = NA)
 ```
 
-## **Objective** [Change]
-+questions
-+summary from above
+## **Objective**
+
+Taking a look at the crime in Vancouver. I'm trying to translate the numbers into something more visual for people to see. How has crime changed over the years? Are certain neighbourhoods more prone to crimes? What type of crime happens the most? These are a few questions I would like to answer with the data. This data will also give me some practice with these packages: dplyr, ggplot2, lubridate, and data.table.
 
 
-+Use and practice packages dplyr,ggplot2, and data.table. Create a report with HTML instead of pdf. Launch a website for the project, and eventually to host all repositories from github.
-
-
-
- Questions:
- Does more crime happen at later hours of the night (early morning 00:00-05:00) ?
- Has crime increased over the years ? 
-   -> what about regional has it increased in certain neighbourhoods ?
- What type of crime appears most ?
-
- Are neighbourhoods targeted for certian crimes ? 
-
-
-
-## **Summary** [Change]
-
-Taking a look at the crime in Vancouver. I'm trying to translate the numbers into something more visual for people to see. How has crime changed over the years, are there neighbourhoods more prone to crimes, what time do most crimes happen? These are a few questions I would like to answer throught the data.
-
--summary
-+summarize results
-+reorder for Objective first
+## **Summary**
+**Theft of Vehicle** is the most common crime to happen in Vancouver, given this data. In general **17:00** seems to be the peak time for a crime to be committed, although certain crimes favour different hours. The **Central Business District** seems to have the most crime committed over the years, [checking relative increase over the years].
 
 ## **Preparations**
 
@@ -78,9 +59,10 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 ### Preprocessing
 
 **To do:**
+
 *-Combine date into single record*
 
-*-Type, neighbourhood of crimes as factor*
+*-Change TYPE, NEIGHBOURHOOD as factor*
 
 *-Check hundred_block == "OFFSET TO PROTECT PRIVACY"*
 
@@ -130,7 +112,6 @@ offset <- crime_all_years %>%
 # What kind of a offensives would that need that?
 offset <- as.data.table(offset)
 offset[, .N, by = .(TYPE)]
-
 ```
 *Information removed to protect privacy on some crimes.*
 
@@ -393,9 +374,12 @@ central <- crime_tidy %>%
 #how have neighbourhoods changed over time
 ```
 
+```{r homicide over time}
 
+offset[TYPE == "Homicide" , .N, by = .(TYPE, YEAR)] %>%
+  ggplot( aes(x = YEAR, y = N)) +
+  geom_line()
 
-
-
+```
 
 
