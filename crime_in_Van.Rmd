@@ -18,8 +18,7 @@ knitr::opts_chunk$set(comment = NA)
 ```
 
 ## **Objective**
-
-Taking a look at the crime in Vancouver. I'm trying to translate the numbers into something more visual for people to see. How has crime changed over the years? Are certain neighbourhoods more prone to crimes? What type of crime happens the most? These are a few questions I would like to answer with the data. This data will also give me some practice with these packages: dplyr, ggplot2, lubridate, and data.table.
+To visualize trends from raw data. How has crime changed over the years? Are certain neighbourhoods more prone to crimes? What type of crime happens the most? These are a few questions I would like to answer with this data. In addition, this data will also give me some practice with these packages: dplyr, ggplot2, lubridate, and data.table. 
 
 
 ## **Summary**
@@ -100,6 +99,7 @@ crime_all_years[, .N, by = .(TYPE)]
 
 
 **OFFSET TO PROTECT PRIVACY**
+Neighbourhood & Time removed
 
 ```{r offset info, warning=FALSE}
 
