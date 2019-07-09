@@ -350,31 +350,50 @@ With all the coordinates from crimes it almost makes a full map of Vancouver. Th
 
 
 
+
+>>>HERE<<<
+
 ```{r time series of neighbourhood crime}
 
 
 ts_test <- crime_tidy %>%
-  filter(NEIGHBOURHOOD == "Killarney") %>%
+  filter(NEIGHBOURHOOD != "",NEIGHBOURHOOD != "Central Business District") %>%
+  group_by(NEIGHBOURHOOD) %>%
   count(DATE)
 
 
-ts_test %>% group_by(month=floor_date(DATE, "month")) %>%
+ ts_test %>% group_by(month=floor_date(DATE, "month"),NEIGHBOURHOOD) %>%
    summarize(amount=sum(n)) %>%
-   ggplot( aes(month, amount)) +
-      geom_line()
+   #select(amount > 200) %>% #amount doesnt exist.. why
+   ggplot( aes(month, amount) ) +
+      geom_line(color = "steelblue") +
+      facet_wrap(~NEIGHBOURHOOD)
+ 
+# Select NEIGHBOURHOOD where amount > 200
+# make a list then can split the two and make 3 graphs: central will get its own
+# and then can compare the ones with high vs high counts and low vs low counts
+
+
+
+central <- crime_tidy %>%
+  filter(NEIGHBOURHOOD == "Central Business District") %>%
+  group_by(NEIGHBOURHOOD) %>%
+  count(DATE)
+
+
 
 #%>%
 #  group_by(NEIGHBOURHOOD)
   
 
-ggplot( data = ts_test, aes( DATE, n )) + 
-  geom_line()
+#ggplot( data = ts_test, aes( DATE, n )) + 
+#  geom_line()
 
 
 #how have neighbourhoods changed over time
 ```
 
->>>HERE<<<
+
 
 
 
