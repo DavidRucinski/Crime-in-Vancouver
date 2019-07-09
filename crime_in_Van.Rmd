@@ -325,7 +325,9 @@ crime_tidy %>%
         plot.caption = element_text(color = "gray15")
         )
 
-# Can I make this interactive? drag bar for year/month?
+
+# Can I make this interactive? drag bar for year/month? Taking up too much memory, 
+# will crash for some people, not worth it
 ```
 With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example,**Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
 
