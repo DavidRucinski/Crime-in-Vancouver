@@ -83,6 +83,10 @@ theme_simple <- function(){
 
 
 
+
+
+
+
 #### Breakdown of crime
 ```{r counts}
 
@@ -117,6 +121,9 @@ offset[, .N, by = .(TYPE)]
 
 
 Homicides make sense why you would want privacy, also for any unusual charges that would be easy to identify the persons involved through cross referencing news articles.
+
+
+
 
 
 
@@ -183,6 +190,10 @@ class(crime_tidy)
 
 
 
+
+
+
+
 ### **Results**
 
 #### Crime Distribution
@@ -198,6 +209,9 @@ ggplot(count_of_crimes, aes(x = reorder(TYPE,total_of_crime), y = sqrt(total_of_
 ```
 
 Here the count of total crimes is skewed, **Vehicle Collision or Pedestrian Struck (with Fatality) & Homicide** have such *low counts* relatively that they barely show on the plot. So finding a good transformation to visualize this I thought of taking the square root. It definitely holds its shape, unlike the log-transform that makes everything look near equal with the exceptation of 2 previous crimes.
+
+
+
 
 
 #### Types of Crime at Hour
@@ -277,6 +291,9 @@ Interesting, looks normally distributed with a left tail.
 
 
 
+
+
+
 #### Crime by Neighbourhood
 ```{r count by neighbourhood}
 
@@ -311,31 +328,38 @@ ggplot( aes(x = reorder(NEIGHBOURHOOD,crimes_committed), y = sqrt(crimes_committ
 
 ```{r longitude and latitude of neighbourhood, fig.width = 12, fig.height = 8}
 
+rogers <- data.frame( X = 491853,
+                      Y = 5458227)
+
 crime_tidy %>%
   ggplot( aes(x = X,y = Y, color = NEIGHBOURHOOD)) +
   guides(color = guide_legend(override.aes = list(size=8))) + # resize the legend
   geom_point(alpha = 0.8, data = crime_tidy[crime_tidy$NEIGHBOURHOOD != "",] ) + 
   coord_cartesian(xlim = c(484000,498000), ylim = c(5450000, 5462500) ) +
-  labs(title = "Longitude and Latitude of Crimes Committed", subtitle = "By Neighbourhood", caption = "Vancouver 2003-2019", y ="Latitude", x = "Longitude ") +
+  labs(title = "UTM Coordinates of Crimes Committed", subtitle = "By Neighbourhood", caption = "Vancouver 2003-2019", y ="North-South position", x = "East-West position ") +
   theme_simple() +
   theme(legend.text = element_text(colour="gray15", size = 10),
         legend.title = element_text(colour="black", size = 12),
         plot.title = element_text(lineheight=3, face="bold", 
                color="black", size=14),
         plot.caption = element_text(color = "gray15")
-        )
+        ) +
+  geom_point(data = rogers, aes(x= X, y = Y), color = "black", size = 50, shape = 1) +
+  geom_point(data = rogers, aes(x= X, y = Y), color = "black", size = 3)
 
 
 # Can I make this interactive? drag bar for year/month? Taking up too much memory, 
 # will crash for some people, not worth it
 ```
-With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example,**Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
+With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example, **Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
 
 
 
 
->>>HERE<<<
 
+#[LABELS]
+
+#### Neighbourhood Crime: Time Series
 ```{r time series of neighbourhood crime, fig.width = 12, fig.height = 8}
 
 
@@ -351,12 +375,14 @@ With all the coordinates from crimes it almost makes a full map of Vancouver. Th
 #    summarize(sum = sum(amount) )
  
 
-
 high_crime <- list("Fairview" , "Grandview-Woodland" , "Hastings-Sunrise","Kensington-Cedar Cottage","Kitsilano", "Mount Pleasant"  ,"Renfrew-Collingwood " ,"West End" )
   
   
 low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South Cambie","Killarney", "Dunbar-Southlands", "Kerrisdale", "Stanley Park", "Victoria-Fraserview", "West Point Grey"  )
+```
 
+##### High-Range Crime Neighbourhoods
+```{r, fig.width = 16, fig.height = 13}
 
 # High-Range Crime Neighbourhoods
   crime_tidy %>%
@@ -370,8 +396,11 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   geom_line(color = "steelblue") +
   facet_wrap(~NEIGHBOURHOOD) +
     theme_bw()
-
+```
   
+##### Medium-Range Crime Neighbourhoods
+```{r, fig.width = 18, fig.height = 10}  
+
 # Medium Range Crime Neighbourhoods
   crime_tidy %>%
   filter(!NEIGHBOURHOOD %in% high_crime, NEIGHBOURHOOD != "", NEIGHBOURHOOD != "Central Business District",            !NEIGHBOURHOOD %in% low_crime) %>% 
@@ -383,7 +412,12 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   geom_line(color = "steelblue") +
   facet_wrap(~NEIGHBOURHOOD) +
     theme_bw()
+```
 
+
+
+##### Low-Range Crime Neighbourhoods
+```{r, fig.width = 18, fig.height = 12} 
 # Low Range Crime Neighbourhoods
   
     crime_tidy %>%
@@ -401,9 +435,11 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
 # Select NEIGHBOURHOOD where amount > 200
 # make a list then can split the neighbourhood and make multiple graphs: central will get its own
 # and then can compare the ones with high vs high counts and low vs low counts
+```
 
 
-
+##### Central Business District
+```{r, fig.width = 12, fig.height = 8} 
     crime_tidy %>%
   filter(NEIGHBOURHOOD == "Central Business District") %>%
   group_by(NEIGHBOURHOOD) %>%
@@ -413,22 +449,38 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   ggplot( aes(x = month, y = amount) ) +
   geom_line(color = "steelblue") +
       theme_gray()
-
+    
+    
+# 2011-06-01 had a huge spike in crime,  2011 Stanley Cup Finals, West End had a small spike. 
+    # Since the 2011 Stanley Cup Riot in Vancouver crime in the surrounding areas have steadily increased.
+    # The Rogers Arena that hosts the Vancouver Canucks is located between Central Business District and
+    # West End. Both of Which have seen an increase in crime since the riot. This could be the long 
+    # lasting effects from the riot. Though damages may have recovered since then maybe the attitude
+    # of not caring still carries through.
+    
+    
 # 2019-06-06 end date
     
-
 #how have neighbourhoods changed over time
 ```
+
+
+ 2011-06-01 had a huge spike in crime,  2011 Stanley Cup Finals, West End had a small spike. 
+     Since the 2011 Stanley Cup Riot in Vancouver crime in the surrounding areas have steadily increased.
+     The Rogers Arena that hosts the Vancouver Canucks is located between Central Business District and
+     West End. Both of Which have seen an increase in crime since the riot. This could be the long 
+     lasting effects from the riot. Though damages may have recovered since then maybe the attitude
+     of not caring still carries through.
+
 
 ```{r homicide over time}
 
 offset[TYPE == "Homicide" , .N, by = .(TYPE, YEAR)] %>%
   ggplot( aes(x = YEAR, y = N)) +
-  geom_line() +
-  coord_cartesian(xlim = c(2003,2019) )
+  geom_line( size = 1, color = "steelblue") +
+  theme_gray()
 
 
-levels(crime_tidy$NEIGHBOURHOOD)
 ```
 
 
