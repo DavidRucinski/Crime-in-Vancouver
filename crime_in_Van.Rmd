@@ -336,65 +336,86 @@ With all the coordinates from crimes it almost makes a full map of Vancouver. Th
 
 >>>HERE<<<
 
-```{r time series of neighbourhood crime}
+```{r time series of neighbourhood crime, fig.width = 12, fig.height = 8}
 
 
-ts_test <- crime_tidy %>%
-  filter(NEIGHBOURHOOD != "",NEIGHBOURHOOD != "Central Business District") %>%
-  group_by(NEIGHBOURHOOD) %>%
-  count(DATE)
-
-
-
-ts_test %>% 
-   group_by(NEIGHBOURHOOD, month=floor_date(DATE, "month")) %>%
-   summarize(amount=sum(n)) %>%
-   filter(amount > 200) %>%
-   summarize(sum = sum(amount) )
+# ts_test <- crime_tidy %>%
+#   filter(NEIGHBOURHOOD != "",NEIGHBOURHOOD != "Central Business District") %>%
+#   group_by(NEIGHBOURHOOD) %>%
+#   count(DATE)
+# 
+# ts_test %>% 
+#    group_by(NEIGHBOURHOOD, month=floor_date(DATE, "month")) %>%
+#    summarize(amount=sum(n)) %>%
+#    filter(amount > 200) %>%
+#    summarize(sum = sum(amount) )
  
 
 
-list_over <- list("", "Central Business District", "Fairview" , "Grandview-Woodland" , "Hastings-Sunrise","Kensington-Cedar Cottage","Kitsilano", "Mount Pleasant"  ,"Renfrew-Collingwood " ,"West End" )
+high_crime <- list("Fairview" , "Grandview-Woodland" , "Hastings-Sunrise","Kensington-Cedar Cottage","Kitsilano", "Mount Pleasant"  ,"Renfrew-Collingwood " ,"West End" )
   
   
+low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South Cambie","Killarney", "Dunbar-Southlands", "Kerrisdale", "Stanley Park", "Victoria-Fraserview", "West Point Grey"  )
 
 
+# High-Range Crime Neighbourhoods
   crime_tidy %>%
-  filter(NEIGHBOURHOOD != list_over) %>% # how to pick var with list wtf
+  filter(NEIGHBOURHOOD %in% high_crime) %>% 
   group_by(NEIGHBOURHOOD) %>%
   count(DATE) %>% 
   group_by(NEIGHBOURHOOD, month=floor_date(DATE, "month")) %>%
   summarize(amount=sum(n)) %>%
-  summarize(sum = sum(amount) )
+  #summarize(sum = sum(amount) )
   ggplot( aes(x = month, y = amount) ) +
   geom_line(color = "steelblue") +
-  facet_wrap(~NEIGHBOURHOOD)
+  facet_wrap(~NEIGHBOURHOOD) +
+    theme_bw()
 
+  
+# Medium Range Crime Neighbourhoods
+  crime_tidy %>%
+  filter(!NEIGHBOURHOOD %in% high_crime, NEIGHBOURHOOD != "", NEIGHBOURHOOD != "Central Business District",            !NEIGHBOURHOOD %in% low_crime) %>% 
+  group_by(NEIGHBOURHOOD) %>%
+  count(DATE) %>% 
+  group_by(NEIGHBOURHOOD, month=floor_date(DATE, "month")) %>%
+  summarize(amount=sum(n)) %>%
+  ggplot( aes(x = month, y = amount) ) +
+  geom_line(color = "steelblue") +
+  facet_wrap(~NEIGHBOURHOOD) +
+    theme_bw()
 
+# Low Range Crime Neighbourhoods
+  
+    crime_tidy %>%
+  filter(NEIGHBOURHOOD %in% low_crime) %>% 
+  group_by(NEIGHBOURHOOD) %>%
+  count(DATE) %>% 
+  group_by(NEIGHBOURHOOD, month=floor_date(DATE, "month")) %>%
+  summarize(amount=sum(n)) %>%
+  ggplot( aes(x = month, y = amount) ) +
+  geom_line(color = "steelblue") +
+  facet_wrap(~NEIGHBOURHOOD) +
+      theme_bw()
 
-
-
- 
+    
 # Select NEIGHBOURHOOD where amount > 200
-# make a list then can split the two and make 3 graphs: central will get its own
+# make a list then can split the neighbourhood and make multiple graphs: central will get its own
 # and then can compare the ones with high vs high counts and low vs low counts
 
 
 
-central <- crime_tidy %>%
+    crime_tidy %>%
   filter(NEIGHBOURHOOD == "Central Business District") %>%
   group_by(NEIGHBOURHOOD) %>%
-  count(DATE)
+  count(DATE) %>%
+  group_by(NEIGHBOURHOOD, month=floor_date(DATE, "month")) %>%
+  summarize(amount=sum(n)) %>%
+  ggplot( aes(x = month, y = amount) ) +
+  geom_line(color = "steelblue") +
+      theme_gray()
 
-
-
-#%>%
-#  group_by(NEIGHBOURHOOD)
-  
-
-#ggplot( data = ts_test, aes( DATE, n )) + 
-#  geom_line()
-
+# 2019-06-06 end date
+    
 
 #how have neighbourhoods changed over time
 ```
@@ -406,6 +427,8 @@ offset[TYPE == "Homicide" , .N, by = .(TYPE, YEAR)] %>%
   geom_line() +
   coord_cartesian(xlim = c(2003,2019) )
 
+
+levels(crime_tidy$NEIGHBOURHOOD)
 ```
 
 
