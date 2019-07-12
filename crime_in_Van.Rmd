@@ -21,8 +21,9 @@ knitr::opts_chunk$set(comment = NA)
 To visualize trends from raw data. How has crime changed over the years? Are certain neighbourhoods more prone to crimes? What type of crime happens the most? These are a few questions I would like to answer with this data. In addition, this data will also give me some practice with these packages: dplyr, ggplot2, lubridate, and data.table. 
 
 
-## **Summary** [CHANGE]
-**Theft of Vehicle** is the most common crime to happen in Vancouver, given this data. In general **17:00** seems to be the peak time for a crime to be committed, although certain crimes favour different hours. The **Central Business District** seems to have the most crime committed over the years, [checking relative increase over the years].
+## **Summary**
+**Theft of Vehicle** is the most common crime to happen in Vancouver, given this data. In general **17:00** seems to be the peak time for a crime to be committed, although certain crimes favour different hours. The **Central Business District** seems to have the most crime committed over the years. It had been going down over the years until the 2011 riot, since then crime has steadily increased in **Central Business District** and surrounding neighbourhoods.
+
 
 ## **Preparations**
 
@@ -59,15 +60,15 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 
 **To do:**
 
-*-Combine date into single record*
+*-Combine date into single record : filter data*
 
-*-Change TYPE, NEIGHBOURHOOD as factor*
+*-Change TYPE, NEIGHBOURHOOD as factor : clean data*
 
-*-Check hundred_block == "OFFSET TO PROTECT PRIVACY"*
+*-Check hundred_block == "OFFSET TO PROTECT PRIVACY" : explore data* 
 
-*-Drop hundred_block*
+*-Drop hundred_block : filter data*
 
-*-Make plots*
+*-Make plots : visual data*
 
 ```{r defining_a_theme, echo = FALSE}
 theme_simple <- function(){
@@ -102,7 +103,7 @@ crime_all_years[, .N, by = .(TYPE)]
 
 
 
-**OFFSET TO PROTECT PRIVACY**
+#####**OFFSET TO PROTECT PRIVACY**
 Neighbourhood & Time removed
 
 ```{r offset info, warning=FALSE}
@@ -345,7 +346,9 @@ crime_tidy %>%
         plot.caption = element_text(color = "gray15")
         ) +
   geom_point(data = rogers, aes(x= X, y = Y), color = "black", size = 50, shape = 1) +
-  geom_point(data = rogers, aes(x= X, y = Y), color = "black", size = 3)
+  geom_point(data = rogers, aes(x= X, y = Y), color = "black", size = 3) + 
+  annotate(geom="text", x=491853, y=5458600, label="Rogers Arena",
+              color="black")
 
 
 # Can I make this interactive? drag bar for year/month? Taking up too much memory, 
@@ -353,11 +356,10 @@ crime_tidy %>%
 ```
 With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example, **Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
 
+**Rogers Arena** hosted the 2011 Stanley Cup Finals, June 15 Vancouver Canucks lost to Boston Bruins 4:0 in game 7, which was followed by a riot.
 
 
 
-
-#[LABELS]
 
 #### Neighbourhood Crime: Time Series
 ```{r time series of neighbourhood crime, fig.width = 12, fig.height = 8}
@@ -380,6 +382,8 @@ high_crime <- list("Fairview" , "Grandview-Woodland" , "Hastings-Sunrise","Kensi
   
 low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South Cambie","Killarney", "Dunbar-Southlands", "Kerrisdale", "Stanley Park", "Victoria-Fraserview", "West Point Grey"  )
 ```
+Here I split up the the neighbourhoods to compare relative changes, need to change the scale to compare.
+
 
 ##### High-Range Crime Neighbourhoods
 ```{r, fig.width = 16, fig.height = 13}
@@ -395,9 +399,11 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   ggplot( aes(x = month, y = amount) ) +
   geom_line(color = "steelblue") +
   facet_wrap(~NEIGHBOURHOOD) +
-    theme_bw()
+    theme_bw(base_size = 22) +
+  labs(caption = "Vancouver 2003-2019", title = "Count of Crime Over Time: By Month", x = "Date", y = "Count", subtitle = "High-Range Crime Neighbourhoods" ) 
 ```
-  
+
+
 ##### Medium-Range Crime Neighbourhoods
 ```{r, fig.width = 18, fig.height = 10}  
 
@@ -411,7 +417,8 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   ggplot( aes(x = month, y = amount) ) +
   geom_line(color = "steelblue") +
   facet_wrap(~NEIGHBOURHOOD) +
-    theme_bw()
+    theme_bw(base_size = 22) +
+    labs(caption = "Vancouver 2003-2019", title = "Count of Crime Over Time: By Month", x = "Date", y = "Count", subtitle = "Medium-Range Crime Neighbourhoods" )
 ```
 
 
@@ -429,7 +436,9 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   ggplot( aes(x = month, y = amount) ) +
   geom_line(color = "steelblue") +
   facet_wrap(~NEIGHBOURHOOD) +
-      theme_bw()
+      theme_bw(base_size = 22) +
+      labs(caption = "Vancouver 2003-2019", title = "Count of Crime Over Time: By Month", x = "Date", y = "Count", subtitle = "Low-Range Crime Neighbourhoods" )
+
 
     
 # Select NEIGHBOURHOOD where amount > 200
@@ -448,7 +457,8 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
   summarize(amount=sum(n)) %>%
   ggplot( aes(x = month, y = amount) ) +
   geom_line(color = "steelblue") +
-      theme_gray()
+      theme_gray() +
+        labs(caption = "Vancouver 2003-2019", title = "Count of Crime Over Time: By Month", x = "Date", y = "Count", subtitle = "Central Business District" )
     
     
 # 2011-06-01 had a huge spike in crime,  2011 Stanley Cup Finals, West End had a small spike. 
@@ -463,24 +473,20 @@ low_crime <- list("Arbutus Ridge" ,"Musqueam", "Oakridge", "Shaughnessy", "South
     
 #how have neighbourhoods changed over time
 ```
+*Counts are for the whole month*
 
+In June 2011 **Central Business District** had a huge spike in crime, 2011-06-15 was the Stanley Cup Finals at Rogers Arena, and **West End** also a small spike. Since the 2011 Stanley Cup Riot in Vancouver crime in the surrounding areas have steadily increased. The Rogers Arena that hosts the Vancouver Canucks is located in **Central Business District** near **West End**. Both of Which have seen an increase in crime since the riot. This could be the long lasting effects from the riot. Though damages may have recovered since then maybe the attitude of not caring still carries through. There may also be other factors contributing to the increase in crime in these areas.
 
- 2011-06-01 had a huge spike in crime,  2011 Stanley Cup Finals, West End had a small spike. 
-     Since the 2011 Stanley Cup Riot in Vancouver crime in the surrounding areas have steadily increased.
-     The Rogers Arena that hosts the Vancouver Canucks is located between Central Business District and
-     West End. Both of Which have seen an increase in crime since the riot. This could be the long 
-     lasting effects from the riot. Though damages may have recovered since then maybe the attitude
-     of not caring still carries through.
-
-
-```{r homicide over time}
+##### Homicides Counts
+```{r homicide over time, fig.width = 12, fig.height = 8}
 
 offset[TYPE == "Homicide" , .N, by = .(TYPE, YEAR)] %>%
   ggplot( aes(x = YEAR, y = N)) +
   geom_line( size = 1, color = "steelblue") +
-  theme_gray()
+  theme_gray() +
+          labs(caption = "Vancouver 2003-2019", title = "Homicides in Vancouver", x = "Date", y = "Count", subtitle = "Count of Homicides per Year" )
 
-
+offset[TYPE == "Homicide" , .N, by = .(TYPE, YEAR)][, .(YEAR, N)]
 ```
-
+As of 2019-06-7, the homicide count for 2019 is lower than any previous year, hopefully it stays that way.
 
