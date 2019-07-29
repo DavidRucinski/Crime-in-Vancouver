@@ -57,6 +57,8 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 #   tail()
 ```
 
+
+##### Let's take a peak at the data
 ```{r}
 head(crime_all_years, 20)
 
