@@ -277,7 +277,7 @@ crime_tidy[TYPE  %like% "Other Theft"] %>%
   theme_simple()
 
 ```
-Interesting, looks normally distributed with a left tail.
+Looks normally distributed about 15.5, interesting.
 
 
 
@@ -354,7 +354,7 @@ crime_tidy %>%
 # Can I make this interactive? drag bar for year/month? Taking up too much memory, 
 # will crash for some people, not worth it
 ```
-With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map that have a clear form. The bottom right for example, **Killarney**, has 2 void spots. They happen to be a gold course and a wooded park that has an off-leash area.
+With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map void of points that have a distinct shape. The bottom right for example, **Killarney**, has 2 void shapes. They happen to be a golf course and a wooded park that has an off-leash area.
 
 **Rogers Arena** hosted the 2011 Stanley Cup Finals, June 15 Vancouver Canucks lost to Boston Bruins 4:0 in game 7, which was followed by a riot.
 
