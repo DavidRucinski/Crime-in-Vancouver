@@ -22,7 +22,8 @@ To visualize trends from raw data. How has crime changed over the years? Are cer
 
 
 ## **Summary**
-**Theft of Vehicle** is the most common crime to happen in Vancouver, given this data. In general **17:00** seems to be the peak time for a crime to be committed, although certain crimes favour different hours. The **Central Business District** seems to have the most crime committed over the years. It had been going down over the years until the 2011 riot, since then crime has steadily increased in **Central Business District** and surrounding neighbourhoods.
+*Given this data*: **Theft of Vehicle** is the most common crime to happen in Vancouver. In general **17:00** seems to be the peak time for a crime to be committed, although certain crimes favour different hours. The **Central Business District** seems to have the most crime committed over the years. It had been going down over the years until the 2011 riot, since then crime has steadily increased in **Central Business District** and surrounding neighbourhoods.
+
 
 
 ## **Preparations**
@@ -55,6 +56,12 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 #   arrange(desc(YEAR),desc(MONTH),desc(DAY)) %>%
 #   tail()
 ```
+
+```{r}
+head(crime_all_years, 20)
+
+```
+
 
 ### Preprocessing
 
@@ -356,7 +363,7 @@ crime_tidy %>%
 ```
 With all the coordinates from crimes it almost makes a full map of Vancouver. There is certain sections on that map void of points that have a distinct shape. The bottom right for example, **Killarney**, has 2 void shapes. They happen to be a golf course and a wooded park that has an off-leash area.
 
-**Rogers Arena** hosted the 2011 Stanley Cup Finals, June 15 Vancouver Canucks lost to Boston Bruins 4:0 in game 7, which was followed by a riot.
+**Rogers Arena** hosted the 2011 Stanley Cup Finals, on June 15 Vancouver Canucks lost to Boston Bruins 4:0 in game 7, which was followed by a riot.
 
 
 
