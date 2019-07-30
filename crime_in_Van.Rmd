@@ -58,7 +58,7 @@ crime_all_years <- fread("crime_csv_all_years.csv")
 ```
 
 
-##### Let's take a peak at the data
+##### Let's take a peek at the data
 ```{r}
 head(crime_all_years, 20)
 
