@@ -18,7 +18,7 @@ knitr::opts_chunk$set(comment = NA)
 ```
 
 ## **Objective**
-To visualize trends from raw data. How has crime changed over the years? Are certain neighbourhoods more prone to crimes? What type of crime happens the most? These are a few questions I would like to answer with this data. In addition, this data will also give me some practice with these packages: dplyr, ggplot2, lubridate, and data.table. 
+Identify and examine crime trends from Vancouver's data. Identify how has crime changed over the years, if certain neighbourhoods more prone to crimes, and what type of crime happens the most. In addition, this data will also give me some practice with these packages: dplyr, ggplot2, lubridate, and data.table. 
 
 
 ## **Summary**
